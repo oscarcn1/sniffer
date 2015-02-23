@@ -1,8 +1,18 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/**
+* Copyright 2015 Nuuptech
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+**/
 package com.nuuptech.prosa.sniffer;
 
 import java.io.DataInputStream;
@@ -12,11 +22,12 @@ import java.net.Socket;
 import java.nio.ByteBuffer;
 
 /**
- *
- * @author oscar
+ * Reads byte array from socket
+ * @author <a href="mailto:oscar.castillo@nuuptech.com">Oscar Castillo</a> 
  */
 public class Sniffer {
     
+    //Socket
     private Socket clientSocket;
     //System end of line
     private static String EOL = System.getProperty("line.separator");
@@ -29,6 +40,7 @@ public class Sniffer {
         boolean end = false;
         short length = 0;
         ByteBuffer byteBuffer = null;
+        int indexReaded = 0;
         DataInputStream in = new DataInputStream(clientSocket.getInputStream());
         System.out.print("Reading length bytes ");
         while(!end) {
@@ -48,17 +60,20 @@ public class Sniffer {
         System.out.println(EOL + "Message length is " + length);
         byte[] message = new byte[length];
         end  = false;
-        System.out.print("Reading message bytes ");
+        System.out.println(EOL + "Reading message bytes ");
+        bytesReaded = 0;
         while(!end) {
-            System.out.print(".");
             bytesReaded += in.read(message);
+            System.out.println("bytesReaded = " + bytesReaded);
+            while (indexReaded < bytesReaded) {
+                System.out.print(EOL + "Byte" + indexReaded + " is : ");
+                System.out.format("0x%x ", message[indexReaded]);
+                indexReaded++;
+            }
             if(bytesReaded == length) {
                 end = true;
             }
         }
-        System.out.println(EOL + "Message in bytes is: ");
-        for (byte b : message) {
-            System.out.format("0x%x ", b);
-        }
+        System.out.println(EOL + "Done.");
     }
 }
